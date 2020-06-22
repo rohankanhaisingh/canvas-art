@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+    <meta charset="utf-8" />
+    <style>
+        img, a {
+            cursor: pointer;
+        }
+        img:nth-child(even) {
+            float: right;
+        }
+        .box {
+            margin: 50px 20px;
+            width: 70px;
+            height: 70px;
+            background: #1d1d1d;
+            float: left;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+</head>
+<body>
+    <img src="https://cdn.discordapp.com/attachments/698490020935237653/701117567195938879/ezgif.com-video-to-gif.gif" />
+    
+    <div class="box"></div>
+    <div class="box"></div>
+    <div class="box"></div>
+    <div class="box"></div>
+    <div class="box"></div>
+    <div class="box"></div>
+    <div class="box"></div>
+    <div class="box"></div>
+    <div class="box"></div>
+    <div class="box"></div>
+    <div class="box"></div>
+    <div class="box"></div>
+    <div class="box"></div>
+    <div class="box"></div>
+    <div class="box"></div>
+    <div class="box"></div>
+    <div class="box"></div>
+    <div class="box"></div>
+    <div class="box"></div>
+    <div class="box"></div>
+    <canvas id="canvas"></canvas>
+
+    <script>
+        var elements = [];
+
+        $(window).on("load", () => {
+            for (var e in $("body *")) {
+                const elem = $("body *")[e];
+                if (elem instanceof HTMLElement) { // Check if the 'elem' variable is a HTML element.
+                    const elementBoundingClient = elem.getBoundingClientRect(); // Get bounding client rect of the element.
+
+                    // Check if the element is interactable with 2 if-statements.
+                    if (elementBoundingClient.width !== 0 && elementBoundingClient.height !== 0 && elementBoundingClient.top !== 0 && elementBoundingClient.left !== 0) {
+                        const css = getComputedStyle(elem); // Get the computed style of the element;
+                        if (css['pointerEvents'] !== 'none') { // Css property pointer-events will make a element interactable or not. 
+                            elements.push({ em: elem, elementBounding: elementBoundingClient });
+                        }
+                    }
+                }
+            }
+        });
+
+        $(window).on("mousedown", (event) => {
+            const scroll = document.documentElement.scrollTop || document.body.scrollTop; // Get the scolled position of the body documentElement wont work on Safari and on the older version of Microsoft IE/Edge.
+
+            const mouse = {
+                x: event.clientX, // Get the mouse x position.
+                y: event.clientY + scroll // Get the mouse y position.
+            }
+
+            elements.forEach((element) => { // Loop trough the elements array.
+                const elementBounding = element.elementBounding; // Get the bounding client rect of the element from the object.
+
+                if ((mouse.x >= elementBounding.x && mouse.x <= elementBounding.x + elementBounding.width) && (mouse.y >= elementBounding.y && mouse.y <= elementBounding.y + elementBounding.height)) { // Too lazy to explain, lmao sorry.
+                    console.log(element.em);
+                }
+            });
+        });
+
+        // R.K, Microsoft Visual Studio, CEO Corona
+    </script>
+</body>
+</html>

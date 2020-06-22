@@ -1,0 +1,137 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Bals With Rings</title>
+    <meta charset="utf-8" />
+    <style>
+        body {
+            display: contents;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas class="canvas"></canvas>
+
+    <script type="text/javascript">
+        const canvas = document.querySelector("canvas"); // Get the canvas element.
+        const ctx = canvas.getContext('2d'); // Get the 2D context of the canvas element
+
+        // Set the width and the height of the canvas element.
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let circles = []; // Empty array to store our circles.
+        let rings = []; // Empty array to store rings of the circles.
+
+        class Circle {
+            constructor(x, y) {
+                this.x = x; // Define the x position.
+                this.y = y; // Define the y position.
+                this.radius = 3; // Define the radius.
+
+
+                // Forget this lol.
+                setTimeout(() => {
+                    const interval = setInterval(() => {
+                        rings.push(new Ring(this.x, this.y, this.radius));
+                    }, 1000);
+                }, Math.floor(Math.random() * (2000 - 0 + 1) + 0));
+
+            }
+            draw() {
+                // Draw the circles.
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+                ctx.fillStyle = '#e3e3e3';
+                ctx.fill();
+
+            }
+            update() {
+                circles.forEach((circle) => { // Loop trough the circles array.
+                    if ((this.x > circle.x - 200 && this.x < circle.x + 200) && (this.y > circle.y - 200 && this.y < circle.y + 200)) { // See if other circles are within 200 pixel radius of a circle.
+                        // Connect them with eachother.
+                        ctx.beginPath();
+                        ctx.moveTo(this.x, this.y);
+                        ctx.lineWidth = 0.05;
+                        ctx.lineTo(circle.x, circle.y);
+                        ctx.strokeStyle = '#e3e3e3';
+                        ctx.stroke();
+                    }
+                });
+
+                this.draw();
+            }
+        }
+
+        let ringID = 0;
+
+        class Ring {
+            constructor(x, y, radius) {
+                ringID++;
+                this.ringID = ringID; // Create a id for each ring.
+
+
+                this.x = x; // Define the x position.
+                this.y = y; // Define the y position.
+
+                this.lineWidth = 1; // Set the line width.
+                this.radius = radius; // Set the radius.
+            }
+            draw() {
+                // Draw the rings.
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+                ctx.lineWidth = this.lineWidth;
+                ctx.strokeStyle = '#e3e3e3';
+                ctx.stroke();
+            }
+            update() {
+                if (this.lineWidth > 0.1) { // If the linewidth is greater than 0.1.
+                    this.radius += 0.5; // Increase the radius by 0.5.
+                    this.lineWidth -= 0.02; // Decrease the linewidth ny 0.02.
+                } else {
+                    for (let i = 0; i < rings.length; i++) { // Loop trough the rings array.
+                        if (rings[i].ringID == this.ringID) { // If the ring from the looped index item its ID equals this ID.
+                            rings.splice(i, 1); // Remove a specific index of the rings array.
+                        }
+                    }
+                }
+
+                this.draw();
+            }
+        }
+        
+        for (let i = 0; i < 140; i++) {
+            let randomWidth = Math.floor(Math.random() * window.innerWidth); // Get a random x position.
+            let randomHeight = Math.floor(Math.random() * window.innerHeight); // Get a random y position.
+
+            circles.push(new Circle(randomWidth, randomHeight)); // Create a new circle.
+        }
+
+        const update = () => {
+            window.requestAnimationFrame(update); // Update each frame.
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear each frame.
+
+            // Set a epic background.
+            ctx.beginPath();
+            ctx.rect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#1e1e1e';
+            ctx.fill();
+
+            circles.forEach((circle) => { // Loop trough the circle array.
+                circle.update(); // Update the circles.
+            });
+            rings.forEach((ring) => { // Loop trough the rings array.
+                ring.update(); // Update the rings.
+            });
+        }
+        update();
+
+        // Bals With Rings by R.K, CEO Corona, Microsoft Visual Studio.
+    </script>
+</body>
+</html>

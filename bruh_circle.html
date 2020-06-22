@@ -1,0 +1,200 @@
+﻿<!--
+	By R.K (CEO Corona or Microsoft Visual Studio)
+	https://github.com/rohankanhaisingh
+-->
+
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Bruh</title>
+    <meta name="description" content="Bruh">
+    <meta name="keywords" content="Bruh">
+    <meta name="author" content="Bruh">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image" content="images/icon.gif" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@Bruh" />
+    <meta name="twitter:creator" content="@Bruh" />
+    <meta name="twitter:domain" content="Bruh" />
+    <meta name="twitter:title" content="Bruh" />
+    <link href="https://fonts.googleapis.com/css?family=Lato&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Poiret+One" rel="stylesheet">
+    <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css' integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
+    <link href="https://fonts.googleapis.com/css?family=Righteous" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Audiowide" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Black+Ops+One" rel="stylesheet">
+    <style>
+        body {
+            display: contents;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body theme="modern">
+    <canvas class="view" unique-id></canvas>
+    <script src="./g.js"></script>
+    <script>
+        /*
+	By Rohan Kanhaisingh (CEO Corona or Microsoft Visual Studio)
+	https://github.com/rohankanhaisingh
+*/
+
+
+        const canvas = g.Selector("<canvas>");
+        const ctx = canvas.getContext("2d");
+        let NoArray = [];
+        let NoID = 0;
+        let mouse = {
+            x: undefined,
+            y: undefined
+        }
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        canvas.addEventListener("contextmenu", function (event) {
+            event.preventDefault();
+        });
+
+        canvas.addEventListener("mousemove", () => {
+            mouse.x = event.clientX;
+            mouse.y = event.clientY;
+        });
+
+
+        class No {
+            constructor(x, y) {
+                NoID++;
+
+                this.id = NoID;
+                this.x = x;
+                this.y = y;
+
+                this.moveX = Math.floor(Math.random() * (-2 - 1 + 1) + 1);
+                this.moveY = 0;
+                // this.bounce = 40 / (canvas.height - this.y) * 50
+                this.bounce = Math.floor(Math.random() * (30 - 20 + 1) + 20);
+
+                this.color = `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`;
+            }
+            draw() {
+                ctx.strokeStyle = this.color;
+                ctx.fillStyle = this.color;
+                ctx.lineWidth = 4;
+                ctx.lineCap = 'round';
+
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 30, 0, 2 * Math.PI);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.arc(this.x - 9, this.y - 5, 3, 0, 2 * Math.PI);
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.arc(this.x + 9, this.y - 5, 3, 0, 2 * Math.PI);
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.moveTo(this.x - 10, this.y + 14);
+                ctx.lineTo(this.x + 10, this.y + 14);
+                ctx.stroke();
+
+
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y);
+                ctx.lineTo(mouse.x, mouse.y);
+                ctx.lineWidth = 0.1;
+                ctx.stroke();
+            }
+            update() {
+
+                NoArray.forEach((no) => {
+                    if (this.id !== no.id) {
+                        if ((this.x > no.x - 36 && this.x < no.x + 36) && (this.y > no.y - 36 && this.y < no.y + 36)) {
+                            // this.moveY -= 5;
+                            if (this.x > no.x) {
+                                this.moveX = 14;
+                                this.color = `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`;
+                            }
+                            if (this.x < no.x) {
+                                this.moveX = -14;
+                                this.color = `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`;
+                            }
+                        }
+                    }
+                });
+
+                if (this.y < canvas.height - 30) {
+                    this.moveY += 0.5;
+                }
+                if (this.y > canvas.height - 30) {
+                    if (this.bounce > 0) {
+                        this.moveY = -this.bounce;
+                        this.y = canvas.height - 30;
+                        this.bounce -= 1;
+                    } else {
+                        this.y = canvas.height - 30;
+                    }
+                }
+                if (this.x < 15) {
+                    this.x = 15 + 4;
+                    this.moveX = 2;
+                }
+                if (this.x > canvas.width - 16) {
+                    this.x = canvas.width - 16 - 4;
+                    this.moveX = -2;
+                }
+
+                if (this.moveX > 0) {
+                    this.moveX -= 0.1;
+                }
+                if (this.moveX < 0) {
+                    this.moveX += 0.1;
+                }
+                this.x += this.moveX;
+                this.y += this.moveY;
+                this.draw();
+            }
+        }
+
+
+        for (var i = 0; i < 1; i++) {
+            // NoArray.push(new No(Math.floor(Math.random() * canvas.width), Math.floor(Math.random() * canvas.height)));
+            NoArray.push(new No(canvas.width / 2, canvas.height / 2));
+        }
+
+        window.addEventListener("mousedown", () => {
+            if (event.button == 0) {
+                for (var i = 0; i < 2; i++) {
+                    NoArray.push(new No(event.clientX, event.clientY));
+                }
+            }
+        });
+
+
+        const update = () => {
+            window.requestAnimationFrame(update);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.beginPath();
+            ctx.rect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#1d1d1d';
+            ctx.fill();
+
+            NoArray.forEach((no) => {
+                no.update();
+            });
+        }
+        update();
+    </script>
+</body>
+</html>

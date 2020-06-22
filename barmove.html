@@ -1,0 +1,122 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Test</title>
+    <meta charset="utf-8" />
+    <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+    <style>
+        canvas {
+            display: inline-block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            animation: canvas-filters 10s linear infinite;
+        }
+
+        @keyframes canvas-filters {
+            0% {
+                filter: hue-rotate(0deg);
+            }
+
+            100% {
+                filter: hue-rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body theme="dark">
+    <canvas class="canvas"></canvas>
+
+    <script>
+        // Epic bar things by R.K, CEO Corona, Microsoft Visual Studio.
+
+        const canvas = $(".canvas")[0]; // Get the canvas element.
+        const ctx = canvas.getContext("2d"); // Get the 2d context of the canvas, so we can draw things.
+
+        // Set the height and the width of the element.
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Set the bar properties
+        let barLength = innerWidth; // Max barlength.
+        let bars = []; // Empty array so we can store our bars.
+        let barHeightAmplifier = 4; // Amount to decrease or increase the height of the bars when the user is hovering over it.
+
+        // Define default mouse positions.
+        let mouseX = undefined;
+        let mouseY = undefined;
+
+        // Define the mouse radius
+        let mouseRadius = 30;
+
+        // Mouse position handler.
+        $(window).on("mousemove", (event) => {
+            mouseX = event.clientX;
+            mouseY = event.clientY;
+        });
+
+        $(window).on("mouseout", () => {
+            mouseX = undefined;
+            mouseY = undefined;
+        });
+        
+
+        class Bar { // Bar class method.
+            constructor(x, colors) {
+                this.x = canvas.width / barLength * x; // Define the x position.
+                this.y = canvas.height; // Define the y position at the bottom of the canvas.
+                this.height = -(canvas.height / 2); // Define the height (minus number).
+                this.width = canvas.width / barLength; // Define the width.
+                this.colors = colors; // Color object.
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.rect(this.x, this.y, this.width, this.height);
+                ctx.fillStyle = `rgb(${this.colors.r}, ${this.colors.g}, ${this.colors.b})`;
+                ctx.fill();
+            }
+            update() {
+
+                if (mouseX !== undefined && mouseY !== undefined) {
+                    if (mouseX > this.x - mouseRadius && mouseX < this.x + this.width + mouseRadius) {
+                        if (mouseY >= (this.y + this.height)) {
+                            this.height += barHeightAmplifier;
+                        } else {
+                            this.height -= barHeightAmplifier;
+                        }
+                    }
+                }
+
+                this.draw(); // Call the draw method
+            }
+        }
+
+        let RandomNumberBetween255 = Math.floor(Math.random() * 256); // Get a random number between 0 and 255
+
+        // Execute the loop AFTER the initialization of the class method.
+        for (var i = 0; i < barLength; i++) {
+            bars.push(new Bar(i, { r: 255 / barLength * i, g: RandomNumberBetween255, b: 255 / barLength * i})); // Push a bar into the bars array with some epic random colors.
+        }
+
+
+        let update = () => {
+            window.requestAnimationFrame(update); // Call this function each window frame.
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas each frame.
+
+            // Give the canvas an epic background color.
+            ctx.beginPath();
+            ctx.rect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#1d1d1d';
+            ctx.fill();
+
+            bars.forEach((bar) => { // Loop through the bars array and execute the update function for each bar.
+                bar.update(); // Excecution.
+            });
+        }
+
+        update();
+    </script>
+</body>
+</html>

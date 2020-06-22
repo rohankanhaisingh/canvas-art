@@ -1,0 +1,136 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Epic Circle Thing</title>
+    <meta charset="utf-8" />
+    <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+    <style>
+        canvas {
+            display: inline-block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            animation: canvas-filters 10s linear infinite;
+        }
+
+        @keyframes canvas-filters {
+            0% {
+                filter: hue-rotate(0deg);
+            }
+            100% {
+                filter: hue-rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas class="canvas"></canvas>
+
+    <script>
+        let canvas = $(".canvas")[0];
+        let ctx = canvas.getContext("2d");
+
+
+        // Set the canvas height and width.
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        var lines = []; // Empty array.
+
+        let RandomNumberBetween255 = Math.floor(Math.random() * 256); // Generate a random number between 0 and 256.
+
+        class Circle {
+            constructor(radius) {
+                this.radius = radius; // Define the circle radius.
+                this.startRadius = radius; // Define the start radius of the circle.
+                this.x = canvas.width / 2; // Define the circle X position.
+                this.y = canvas.height / 2; // Define the circle Y position.
+
+            }
+            draw() {
+                ctx.beginPath(); // Start the path method.
+                ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI); // Create a circle.
+                ctx.lineWidth = 1; // Set the line width of the arc. This has to be here or else it will combine with the linewidth of the lines.
+                ctx.strokeStyle = '#1d1d1d'; // Give the stroke a epic color.
+                ctx.stroke(); // Vizualize the circle.
+            }
+            update() {
+                this.radius = this.startRadius + lines.length; // Radius of the circle will increase based on how many lines there are.
+
+                this.draw();
+            }
+        }
+        
+        class Line {
+            constructor(targetX, targetY, lineWidth) {
+                this.targetX = targetX; // Define the tafget X position.
+                this.targetY = targetY; // Define the target Y position.
+                this.lineWidth = lineWidth; // Define the line width.
+
+                this.polarDirection = (Math.sin(360 / 255 * (Math.atan2(targetY - canvas.height / 2, targetX - canvas.width / 2))) * 255) / 1.2; // Create a 360 color system based on the mouseposition. From the center of the screen to the mouse position.
+
+                if (this.polarDirection < 0) { // Check if the polarDirection is a negative number.
+                    this.polarDirection = -(this.polarDirection); // Make it a positve number.
+                }
+            }
+            draw() {
+                ctx.beginPath(); // Start the path method.
+                ctx.moveTo(canvas.width / 2, canvas.height / 2); // Start the line from the center of the screen.
+                ctx.lineTo(this.targetX, this.targetY); // End the line at the mouse position.
+                ctx.lineWidth = this.lineWidth; // Set the line width.
+                ctx.strokeStyle = `rgb(${this.polarDirection}, ${RandomNumberBetween255}, ${RandomNumberBetween255})`; // Give the line an epic stroke color.
+                ctx.stroke(); // Visualize the line.
+            }
+            update() {
+                if (this.lineWidth > 0.1) { // Check if the linewidth is greater than 0.1.
+                    this.lineWidth -= 0.00; // Decrease the width.
+                } else { // If the linewidth is not greater than 0.1.
+                    lines.shift(); // Clear the last index of the 'lines' array.
+                }
+                this.draw(); // Call the draw method.
+            }
+        }
+
+        let isPressingMouseButton = false;
+
+        $(window).on("mousedown", () => { isPressingMouseButton = true; });
+        $(window).on("mouseup", () => { isPressingMouseButton = false});
+
+        $(window).on("mousemove", (event) => { // Mousemove event listener.
+            if (isPressingMouseButton) { // If the user is pressing the mouse button.
+                lines.push(new Line(event.clientX, event.clientY, 1)); // Create a new line and push it into the 'lines' array.
+            }
+        });
+
+        const circle = new Circle(40); // Create a new line.
+
+        const update = () => {
+            window.requestAnimationFrame(update); // Update each frame.
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear each frame.
+
+            // Give the canvas a cool background.
+            ctx.beginPath();
+            ctx.rect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#e3e3e3';
+            ctx.fill();
+
+
+            if (typeof circle !== 'undefined') { // Check if the circle exist.
+                circle.update(); // Update the circle
+            }
+
+            lines.forEach((line) => {
+                if (typeof line.update !== 'undefined') { // Check if the update method in the line object exist.
+                    line.update(); // Update each line.
+                }
+            });
+
+        }
+        update();
+
+
+        // By R.K, CEO Corona, Microsoft Visual Studio.
+    </script>
+</body>
+</html>
